@@ -69,8 +69,13 @@ export async function GET(request: Request) {
     if (!response.ok) {
       throw new Error(`N2YO API responded with status: ${response.status}`);
     }
-
-    const data = await response.json();
+    let data;
+    try {
+      data = await response.json();
+    } catch(e) {
+      const text = await response.text();
+      throw new Error(`Invalid JSON from N2YO (Status ${response.status}): ${text.substring(0, 100)}`);
+    }
     
     // Forward the JSON, append security headers
     return NextResponse.json(data, {
@@ -83,6 +88,7 @@ export async function GET(request: Request) {
 
   } catch (error: unknown) {
     console.error("Tracker API Error:", error);
-    return NextResponse.json({ error: 'Failed to fetch satellite telemetry' }, { status: 500 });
+    const msg = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
