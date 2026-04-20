@@ -6,7 +6,8 @@ import { SatelliteId, useSpaceTracker } from "@/hooks/useSpaceTracker";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { TelemetryPanel } from "@/components/TelemetryPanel";
 import { ProximityIndicator } from "@/components/ProximityIndicator";
-import { ChevronDown, Globe } from "lucide-react";
+import { ChevronDown, Globe, Search } from "lucide-react";
+import satellitesData from "@/data/satellites.json";
 
 // Disable SSR for the map component
 const SpaceMap = dynamic(() => import("@/components/SpaceMap"), {
@@ -21,15 +22,12 @@ const SpaceMap = dynamic(() => import("@/components/SpaceMap"), {
   ),
 });
 
-const SATELLITES: { id: SatelliteId; name: string }[] = [
-  { id: "25544", name: "ISS (Int. Space Station)" },
-  { id: "48274", name: "CSS (Tiangong Space Station)" },
-  { id: "44713", name: "STARLINK-1007 (Leader)" },
-];
+const SATELLITES: { id: SatelliteId; name: string; category?: string }[] = satellitesData;
 
 export default function Home() {
   const [selectedSat, setSelectedSat] = useState<SatelliteId>("25544");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { data, history, error } = useSpaceTracker(selectedSat);
   const geo = useGeolocation();
@@ -59,21 +57,38 @@ export default function Home() {
           </button>
           
           {isDropdownOpen && (
-            <div className="absolute top-full right-0 mt-4 glass-panel rounded-xl overflow-hidden min-w-[280px]">
-              {SATELLITES.map((sat) => (
-                <button
-                  key={sat.id}
-                  onClick={() => {
-                    setSelectedSat(sat.id);
-                    setIsDropdownOpen(false);
-                  }}
-                  className={`w-full text-left px-6 py-4 font-mono text-sm uppercase hover:bg-cyber-blue hover:text-deep-space transition-colors
-                    ${selectedSat === sat.id ? "text-cyber-blue" : "text-white"}
-                  `}
-                >
-                  {sat.name}
-                </button>
-              ))}
+            <div className="absolute top-full right-0 mt-4 glass-panel rounded-xl overflow-hidden min-w-[280px] w-80">
+              <div className="p-3 border-b border-white/10 relative">
+                <Search className="w-4 h-4 text-white/50 absolute left-6 top-1/2 -translate-y-1/2" />
+                <input 
+                  type="text" 
+                  autoFocus
+                  placeholder="Search satellites..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-transparent text-sm font-sans text-white placeholder-white/40 focus:outline-none pl-10"
+                />
+              </div>
+              <div className="max-h-64 overflow-y-auto no-scrollbar">
+                {SATELLITES.filter(s => s.name.toLowerCase().includes(searchQuery.toLowerCase())).map((sat) => (
+                  <button
+                    key={sat.id}
+                    onClick={() => {
+                      setSelectedSat(sat.id);
+                      setIsDropdownOpen(false);
+                      setSearchQuery("");
+                    }}
+                    className={`w-full text-left px-6 py-4 font-mono text-sm uppercase hover:bg-cyber-blue hover:text-deep-space transition-colors
+                      ${selectedSat === sat.id ? "text-cyber-blue" : "text-white"}
+                    `}
+                  >
+                    {sat.name}
+                  </button>
+                ))}
+                {SATELLITES.filter(s => s.name.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
+                  <div className="px-6 py-4 font-sans text-xs text-white/50 uppercase">No results found</div>
+                )}
+              </div>
             </div>
           )}
         </div>

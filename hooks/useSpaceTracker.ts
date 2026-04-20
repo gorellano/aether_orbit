@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-export type SatelliteId = "25544" | "48274" | "44713"; // ISS, CSS, Starlink-1007
+export type SatelliteId = string;
 
 export interface TrackingData {
   latitude: number;
@@ -23,7 +23,12 @@ export function useSpaceTracker(satelliteId: SatelliteId, pollingIntervalMs = 50
       try {
         const res = await fetch(`/api/tracker?id=${satelliteId}`);
         if (!res.ok) {
-          throw new Error("Failed to fetch satellite data");
+          let errorMsg = "Failed to fetch satellite data";
+          try {
+            const errJson = await res.json();
+            if (errJson.error) errorMsg = errJson.error;
+          } catch(e) {}
+          throw new Error(errorMsg);
         }
         
         const json = await res.json();
