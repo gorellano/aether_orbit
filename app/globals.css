@@ -48,6 +48,14 @@ body {
   text-shadow: 0 0 10px rgba(0, 242, 255, 0.6);
 }
 
+.glass-text {
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.leaflet-marker-icon {
+  transition: transform 5s linear, opacity 1s ease-in-out !important;
+}
+
 /* Leaflet dark mode overrides */
 .leaflet-container {
   background-color: var(--background) !important;

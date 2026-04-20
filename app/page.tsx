@@ -2,12 +2,14 @@
 
 import dynamic from "next/dynamic";
 import { useState } from "react";
-import { SatelliteId, useSpaceTracker } from "@/hooks/useSpaceTracker";
+import { ChevronDown, Globe, Search, Volume2, VolumeX } from "lucide-react";
+import satellitesData from "@/data/satellites.json";
+import { useAudioEngine } from "@/hooks/useAudioEngine";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { TelemetryPanel } from "@/components/TelemetryPanel";
 import { ProximityIndicator } from "@/components/ProximityIndicator";
-import { ChevronDown, Globe, Search } from "lucide-react";
-import satellitesData from "@/data/satellites.json";
+import { UpcomingPasses } from "@/components/UpcomingPasses";
+import { SatelliteId, useSpaceTracker } from "@/hooks/useSpaceTracker";
 
 // Disable SSR for the map component
 const SpaceMap = dynamic(() => import("@/components/SpaceMap"), {
@@ -28,6 +30,9 @@ export default function Home() {
   const [selectedSat, setSelectedSat] = useState<SatelliteId>("25544");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [audioEnabled, setAudioEnabled] = useState(false);
+
+  useAudioEngine(audioEnabled);
 
   const { data, history, error } = useSpaceTracker(selectedSat);
   const geo = useGeolocation();
@@ -43,6 +48,7 @@ export default function Home() {
         history={history} 
         userLat={geo.latitude} 
         userLng={geo.longitude} 
+        category={SATELLITES.find(s => s.id === selectedSat)?.category}
       />
 
       {/* Glassmorphism Header & Selector */}
@@ -92,9 +98,16 @@ export default function Home() {
             </div>
           )}
         </div>
+          {/* Audio Toggle */}
+          <button 
+            onClick={() => setAudioEnabled(!audioEnabled)}
+            className="h-12 w-12 ml-4 glass-panel rounded-full flex items-center justify-center text-white/70 hover:text-cyber-blue transition-colors"
+          >
+            {audioEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+          </button>
       </div>
 
-      {/* Telemetry Information */}
+      {/* Selected Satellite Telemetry & Proximity */}
       <TelemetryPanel data={data} satelliteName={selectedSatName.split("(")[0].trim()} />
 
       {/* Distance indicator relative to user location */}
@@ -102,6 +115,13 @@ export default function Home() {
         userLat={geo.latitude} 
         userLng={geo.longitude} 
         satelliteData={data} 
+      />
+
+      {/* Flyby / Overhead Forecasts */}
+      <UpcomingPasses 
+        satelliteId={selectedSat} 
+        userLat={geo.latitude} 
+        userLng={geo.longitude} 
       />
 
       {error && (
