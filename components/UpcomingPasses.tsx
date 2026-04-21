@@ -32,20 +32,24 @@ export function UpcomingPasses({
     let mounted = true;
     setLoading(true);
 
-    fetch(`/api/passes?id=${satelliteId}&lat=${userLat}&lng=${userLng}`)
-      .then(res => res.json())
-      .then((json: PassesData) => {
-        if (mounted) {
-          setData(json);
-          setLoading(false);
-        }
-      })
-      .catch(() => {
-        if (mounted) setLoading(false);
-      });
+    // Retrasar el fetch 2 segundos para evitar colisionar con la llamada de useSpaceTracker y el estricto Rate Limit de N2YO.
+    const timer = setTimeout(() => {
+      fetch(`/api/passes?id=${satelliteId}&lat=${userLat}&lng=${userLng}`)
+        .then(res => res.json())
+        .then((json: PassesData) => {
+          if (mounted) {
+            setData(json);
+            setLoading(false);
+          }
+        })
+        .catch(() => {
+          if (mounted) setLoading(false);
+        });
+    }, 2000);
 
     return () => {
       mounted = false;
+      clearTimeout(timer);
     };
   }, [satelliteId, userLat, userLng]);
 
