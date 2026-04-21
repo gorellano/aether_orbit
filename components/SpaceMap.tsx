@@ -18,21 +18,39 @@ import "leaflet-terminator";
 
 const stationIcon = L.divIcon({
   className: "bg-transparent",
-  html: `<div style="position: relative; width: 32px; height: 32px;">
-           <div style="position: absolute; width: 14px; height: 14px; background-color: #ffffff; border-radius: 50%; top: 9px; left: 9px; box-shadow: 0 0 20px #ffffff, 0 0 40px #00f2ff;"></div>
-           <div style="position: absolute; width: 32px; height: 32px; border: 2px solid #ffffff; border-radius: 50%; opacity: 0.7; animation: pulse 2.5s infinite;"></div>
-         </div>`,
-  iconSize: [32, 32],
-  iconAnchor: [16, 16],
+  html: `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+           <g transform="translate(12, 12)">
+             <!-- Central Module -->
+             <rect x="10" y="4" width="4" height="16" fill="#ffffff" rx="1"/>
+             <rect x="8" y="8" width="8" height="3" fill="#ffffff" rx="0.5"/>
+             <rect x="8" y="13" width="8" height="3" fill="#ffffff" rx="0.5"/>
+             
+             <!-- Left Solar Arrays -->
+             <path d="M0 6h8v4H0V6z" fill="#00f2ff" opacity="0.8" stroke="#ffffff" stroke-width="0.5"/>
+             <path d="M0 14h8v4H0v-4z" fill="#00f2ff" opacity="0.8" stroke="#ffffff" stroke-width="0.5"/>
+             <path d="M4 6v12" stroke="#ffffff" stroke-width="0.5"/>
+             
+             <!-- Right Solar Arrays -->
+             <path d="M16 6h8v4h-8V6z" fill="#00f2ff" opacity="0.8" stroke="#ffffff" stroke-width="0.5"/>
+             <path d="M16 14h8v4h-8v-4z" fill="#00f2ff" opacity="0.8" stroke="#ffffff" stroke-width="0.5"/>
+             <path d="M20 6v12" stroke="#ffffff" stroke-width="0.5"/>
+           </g>
+           <!-- Pulse Ring -->
+           <circle cx="24" cy="24" r="23" stroke="#00f2ff" stroke-width="1.5" opacity="0.5" style="animation: pulse 3s infinite;"/>
+         </svg>`,
+  iconSize: [48, 48],
+  iconAnchor: [24, 24],
 });
 
 const starlinkIcon = L.divIcon({
   className: "bg-transparent",
-  html: `<div style="position: relative; width: 16px; height: 16px;">
-           <div style="position: absolute; width: 6px; height: 6px; background-color: #00f2ff; border-radius: 50%; top: 5px; left: 5px; box-shadow: 0 0 10px #00f2ff;"></div>
-         </div>`,
-  iconSize: [16, 16],
-  iconAnchor: [8, 8],
+  html: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+           <!-- Flat Satellite Bus & Solar Panel -->
+           <rect x="6" y="10" width="12" height="4" fill="#00f2ff" stroke="#ffffff" stroke-width="0.5" rx="1"/>
+           <circle cx="12" cy="12" r="1.5" fill="#ffffff"/>
+         </svg>`,
+  iconSize: [24, 24],
+  iconAnchor: [12, 12],
 });
 
 const userIcon = L.divIcon({

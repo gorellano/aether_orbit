@@ -63,7 +63,7 @@ export async function GET(request: Request) {
       headers: {
         'Accept': 'application/json',
       },
-      cache: 'no-store'
+      next: { revalidate: 2 }
     });
 
     if (!response.ok) {
